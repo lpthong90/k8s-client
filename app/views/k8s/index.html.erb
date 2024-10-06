@@ -1,0 +1,47 @@
+<div>
+  <h1 class="font-bold text-4xl">iDev Cluster</h1>
+</div>
+
+<div style="padding-top: 30px;">
+  <%= form_with url: k8s_index_path, method: :get, id: 'namespace-form' do %>
+  <%= select_tag :namespace, options_for_select(@namespaces.map { |ns| [ns.metadata.name, ns.metadata.name] }, @namespace), id: 'namespace-select' %>
+  <%# <= submit_tag 'Submit' > %>
+  <% end %>
+</div>
+
+<div style="padding-top: 30px;">
+  <table>
+    <thead>
+      <tr>
+        <th>Namespace</th>
+        <th>Name</th>
+        <%# <th>Host</th> %>
+        <th>Path</th>
+        <th>Service</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @ingresses.each do |ingress| %>
+        <tr>
+          <td><%= ingress.metadata.namespace %></td>
+          <%# <td style="padding-left: 20px;" class="font-semibold"><%= link_to ingress.metadata.name, "https://#{ingress.spec.rules[0].host}" </td> %>
+
+          <td style="padding-left: 20px;"> <a href="<%= "https://#{ingress.spec.rules[0].host}" %>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline"><%= ingress.metadata.name %></a></td>
+
+          <%# <td><= ingress.spec.rules[0].host ></td> %>
+          <td style="padding-left: 20px;"><%= ingress.spec.rules[0].http.paths[0].path %></td>
+          <td style="padding-left: 20px;"><%= ingress.spec.rules[0].http.paths[0].backend.service.name %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var select = document.getElementById('namespace-select');
+    select.addEventListener('change', function() {
+      document.getElementById('namespace-form').submit();
+    });
+  });
+</script>
